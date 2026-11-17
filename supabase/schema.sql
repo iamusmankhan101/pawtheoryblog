@@ -115,3 +115,24 @@ on conflict (name) do nothing;
 -- ============================================================
 -- END MIGRATION
 -- ============================================================
+
+-- ============================================================
+-- MIGRATION: per-page SEO overrides (admin > SEO). Safe to re-run.
+-- ============================================================
+create table if not exists page_seo (
+  path text primary key,              -- e.g. '/', '/about', '/category/dogs', '/article/my-slug'
+  title text,
+  description text,
+  canonical text,
+  og_image text,
+  noindex boolean not null default false,
+  updated_at timestamptz default now()
+);
+alter table page_seo enable row level security;
+drop policy if exists "public read" on page_seo;
+create policy "public read" on page_seo for select using (true);
+drop policy if exists "auth all" on page_seo;
+create policy "auth all" on page_seo for all to authenticated using (true) with check (true);
+-- ============================================================
+-- END page_seo MIGRATION
+-- ============================================================

@@ -26,6 +26,7 @@ export default function AdminLayout() {
           <NavLink to="/admin/posts/new" className={cls}>New post</NavLink>
           <NavLink to="/admin/categories" className={cls}>Categories</NavLink>
           <NavLink to="/admin/authors" className={cls}>Authors</NavLink>
+          <NavLink to="/admin/seo" className={cls}>SEO</NavLink>
           <NavLink to="/admin/subscribers" className={cls}>Subscribers</NavLink>
           <NavLink to="/admin/messages" className={cls}>Messages{unread > 0 && <span className="adm-count">{unread}</span>}</NavLink>
           <a className="adm-nav" href="/" target="_blank" rel="noreferrer">View site ↗</a>

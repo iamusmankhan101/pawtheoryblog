@@ -10,23 +10,29 @@ const tpl = readFileSync('dist/index.html', 'utf8')
 const NAME = 'PawTheory'
 const TAGLINE = 'Pets & Animal Care'
 
-const page = (path, { title, desc, body, extraHead = '', type = 'website', image }) => {
-  const url = SITE + path
+let seo = {} // admin overrides from the page_seo table, keyed by path
+const page = (path, d) => {
+  const o = seo[path] || {}
+  const { body, extraHead = '', type = 'website' } = d
+  const title = o.title || d.title, desc = o.description || d.desc, image = o.og_image || d.image
+  const url = o.canonical || SITE + path
   const head = `<title>${esc(title)}</title>
     <meta name="description" content="${esc(desc)}" />
     <link rel="canonical" href="${url}" />
     <meta property="og:type" content="${type}" /><meta property="og:title" content="${esc(title)}" />
-    <meta property="og:description" content="${esc(desc)}" /><meta property="og:url" content="${url}" />${image ? `<meta property="og:image" content="${esc(image)}" />` : ''}${extraHead}`
+    <meta property="og:description" content="${esc(desc)}" /><meta property="og:url" content="${url}" />${o.noindex ? '<meta name="robots" content="noindex, follow" />' : ''}${image ? `<meta property="og:image" content="${esc(image)}" />` : ''}${extraHead}`
   const html = tpl.replace(/<title>.*?<\/title>/, head).replace('<div id="root"></div>', `<div id="root">${body}</div>`)
   if (path !== '/') mkdirSync(`dist${path}`, { recursive: true })
   writeFileSync(path === '/' ? 'dist/index.html' : `dist${path}/index.html`, html)
 }
 
-const [posts, cats, authors] = await Promise.all([
+const [posts, cats, authors, seoRows] = await Promise.all([
   get('posts?select=slug,title,excerpt,author,body,cover_url,category,created_at&status=eq.published&order=created_at.desc'),
   get('categories?select=slug,name,description&order=sort'),
   get('authors?select=name,role,bio&order=name'),
+  get('page_seo?select=*'),
 ])
+seo = Object.fromEntries(seoRows.map((r) => [r.path, r]))
 const used = cats.filter((c) => posts.some((p) => p.category === c.slug))
 
 const nav = `<nav><a href="/">Home</a> <a href="/articles">Articles</a> ${used.map((c) => `<a href="/category/${c.slug}">${esc(c.name)}</a>`).join(' ')} <a href="/about">About</a> <a href="/contact">Contact</a></nav>`

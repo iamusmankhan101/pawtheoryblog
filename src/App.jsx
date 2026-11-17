@@ -19,6 +19,8 @@ import Authors from './admin/Authors.jsx'
 import Subscribers from './admin/Subscribers.jsx'
 import Messages from './admin/Messages.jsx'
 import NotFound from './pages/NotFound.jsx'
+import SeoPages from './admin/SeoPages.jsx'
+import { SeoHead } from './seo.js'
 
 function ScrollToTop() {
   const { pathname, hash } = useLocation()
@@ -43,6 +45,7 @@ export default function App() {
   return (
     <BrowserRouter>
       <ScrollToTop />
+      <SeoHead />
       <Routes>
         <Route element={<AuthGate />}>
           <Route path="/admin" element={<AdminLayout />}>
@@ -53,6 +56,7 @@ export default function App() {
             <Route path="categories" element={<Categories />} />
             <Route path="authors" element={<Authors />} />
             <Route path="subscribers" element={<Subscribers />} />
+            <Route path="seo" element={<SeoPages />} />
             <Route path="messages" element={<Messages />} />
           </Route>
         </Route>
