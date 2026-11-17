@@ -6,9 +6,10 @@ const [posts, cats] = await Promise.all([
   get('categories?select=slug'),
 ])
 
+const used = new Set((await get('posts?select=category&status=eq.published')).map((r) => r.category))
 const urls = [
   ...['/', '/articles', '/about', '/contact', '/terms', '/privacy'].map((p) => [p]),
-  ...cats.map((c) => [`/category/${c.slug}`]),
+  ...cats.filter((c) => used.has(c.slug)).map((c) => [`/category/${c.slug}`]),
   ...posts.map((p) => [`/article/${p.slug}`, p.created_at?.slice(0, 10)]),
 ]
 const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n` +

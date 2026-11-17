@@ -5,7 +5,7 @@ import PostCard from '../components/PostCard.jsx'
 
 export default function Articles() {
   const { posts, loading } = usePosts()
-  const { categories } = useCategories()
+  const { categories } = useCategories(true)
   const [cat, setCat] = useState('all')
   const [q, setQ] = useState('')
   const shown = posts.filter((p) => (cat === 'all' || p.category === cat) && p.title.toLowerCase().includes(q.toLowerCase()))

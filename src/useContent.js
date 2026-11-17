@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import { supabase } from './supabase.js'
-import { categories as staticCats, authors as staticAuthors } from './data.js'
+import { categories as staticCats, authors as staticAuthors, posts as staticPosts } from './data.js'
 
 // Generic table loader. Static data.js is the fallback ONLY when supabase is null.
 function useTable(table, orders, fallback) {
@@ -16,9 +16,17 @@ function useTable(table, orders, fallback) {
   return { rows, loading, reload }
 }
 
-export function useCategories() {
+// usedOnly: public site passes true to hide categories that have no published posts.
+export function useCategories(usedOnly = false) {
   const { rows, loading, reload } = useTable('categories', ['sort', 'name'], staticCats)
-  return { categories: rows, loading, reload }
+  const [used, setUsed] = useState(supabase ? null : new Set(staticPosts.map((p) => p.category)))
+  useEffect(() => {
+    if (!usedOnly || !supabase) return
+    supabase.from('posts').select('category').eq('status', 'published')
+      .then(({ data }) => setUsed(new Set((data || []).map((r) => r.category))))
+  }, [usedOnly])
+  const categories = usedOnly ? rows.filter((c) => used?.has(c.slug)) : rows
+  return { categories, loading: loading || (usedOnly && !used), reload }
 }
 
 export function useAuthors() {

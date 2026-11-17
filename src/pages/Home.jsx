@@ -7,7 +7,7 @@ import PostCard from '../components/PostCard.jsx'
 
 export default function Home() {
   const { posts, loading } = usePosts()
-  const { categories } = useCategories()
+  const { categories } = useCategories(true)
   const f = posts.find((p) => p.featured) || posts[0]
   const [email, setEmail] = useState('')
   const [done, setDone] = useState('')

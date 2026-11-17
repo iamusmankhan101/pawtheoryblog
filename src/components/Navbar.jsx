@@ -10,7 +10,7 @@ export const Logo = ({ light }) => (
 
 export default function Navbar() {
   const [open, setOpen] = useState(false)
-  const { categories } = useCategories()
+  const { categories } = useCategories(true)
   const [dd, setDd] = useState(false)
   const { pathname, hash } = useLocation()
   const close = () => { setOpen(false); setDd(false) }

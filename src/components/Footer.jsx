@@ -5,7 +5,7 @@ import { useCategories } from '../useContent.js'
 const link = (c) => ({ label: c.name, to: `/category/${c.slug}` })
 
 export default function Footer() {
-  const { categories } = useCategories()
+  const { categories } = useCategories(true)
   const footerCols = {
     Categories: categories.slice(0, 5).map(link),
     Company: [{ label: 'Contact', to: '/contact' }, { label: 'All articles', to: '/articles' }],
