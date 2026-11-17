@@ -57,4 +57,4 @@ User-agent: Bytespider
 Allow: /
 Disallow: /admin
 
-Sitemap: https://pawtheory.site/sitemap.xml
+Sitemap: https://www.pawtheory.site/sitemap.xml

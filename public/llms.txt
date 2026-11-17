@@ -8,6 +8,6 @@
 
 ## Pages
 
-- [All articles](https://pawtheory.site/articles)
-- [About](https://pawtheory.site/about)
-- [Contact](https://pawtheory.site/contact)
+- [All articles](https://www.pawtheory.site/articles)
+- [About](https://www.pawtheory.site/about)
+- [Contact](https://www.pawtheory.site/contact)

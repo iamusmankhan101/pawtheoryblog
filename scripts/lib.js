@@ -1,6 +1,6 @@
 import { readFileSync, existsSync } from 'node:fs'
 
-export const SITE = 'https://pawtheory.site'
+export const SITE = 'https://www.pawtheory.site'
 const env = { ...process.env }
 if (existsSync('.env'))
   for (const l of readFileSync('.env', 'utf8').split('\n')) {
