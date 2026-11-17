@@ -1,0 +1,13 @@
+# PawTheory
+
+> Pets & animal care blog.
+
+## Articles
+
+- (none yet)
+
+## Pages
+
+- [All articles](https://pawtheory.site/articles)
+- [About](https://pawtheory.site/about)
+- [Contact](https://pawtheory.site/contact)
