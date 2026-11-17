@@ -185,3 +185,7 @@ body { overflow-x: hidden; overflow-wrap: anywhere; }
 .md details.faq summary::after { content: '+'; font-size: 22px; line-height: 1; color: #667085; }
 .md details.faq[open] summary::after { content: '\2212'; }
 .md details.faq > div { padding: 0 18px 6px; }
+.md h2 { font-size: 28px; font-weight: 600; letter-spacing: -0.01em; }
+.md h3, .md h4 { font-family: Inter, system-ui, sans-serif; font-size: 21px; font-weight: 600; letter-spacing: 0; margin: 28px 0 10px; }
+.md h4 { font-size: 18px; }
+@media (max-width: 720px) { .md h2 { font-size: 24px; } .md h3 { font-size: 19px; } }
