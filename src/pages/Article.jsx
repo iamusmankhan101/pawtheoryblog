@@ -1,4 +1,5 @@
 import { Link, useParams } from 'react-router-dom'
+import { marked } from 'marked'
 import { useCategories } from '../useContent.js'
 import { usePosts, usePost } from '../usePosts.js'
 import PostCard from '../components/PostCard.jsx'
@@ -20,7 +21,9 @@ export default function Article() {
         <Link to={`/category/${c.slug}`} className="cat-badge">{c.name}</Link>
         <h1>{p.title}</h1>
         <div className="author"><img src={p.avatar} alt="" /><span>{p.author} • {p.date} • {p.readTime}</span></div>
-        {p.body.map((t, i) => <p key={i} className="body">{t}</p>)}
+        {p.md
+          ? <div className="md" dangerouslySetInnerHTML={{ __html: marked.parse(p.md) }} />
+          : p.body.map((t, i) => <p key={i} className="body">{t}</p>)}
       </article>
       {related.length > 0 && (
         <>

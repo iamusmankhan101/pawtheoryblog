@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { useCategories, useAuthors } from '../useContent.js'
+import { marked } from 'marked'
 import { supabase } from '../supabase.js'
 import { useToast } from './Toast.jsx'
 import '../admin.css'
@@ -27,6 +28,7 @@ export default function PostEditor() {
   const [drag, setDrag] = useState(false)
   const dirty = useRef(false)
   const fileRef = useRef()
+  const mdRef = useRef()
 
   useEffect(() => {
     if (!id) return
@@ -46,6 +48,16 @@ export default function PostEditor() {
   const set = (k, v) => { dirty.current = true; setF((p) => ({ ...p, [k]: v })); setErrs((e) => ({ ...e, [k]: '' })) }
   const onTitle = (v) => { set('title', v); if (!slugEdited) set('slug', slugify(v)) }
   const onBody = (v) => { set('body', v); if (!rtEdited) set('read_time', readTime(v)) }
+
+  // Load a .md file: first "# Heading" becomes the title (if empty), the rest is the body.
+  const loadMd = async (file) => {
+    if (!file) return
+    if (!/\.(md|markdown|txt)$/i.test(file.name)) return toast('Choose a .md file', 'error')
+    let text = (await file.text()).replace(/^\uFEFF/, '')
+    const m = text.match(/^\s*#\s+(.+)\n/)
+    if (m && !f.title.trim()) { onTitle(m[1].trim()); text = text.slice(m[0].length) }
+    onBody(text.trim())
+  }
 
   const upload = async (file) => {
     if (!file) return
@@ -82,7 +94,6 @@ export default function PostEditor() {
   }
 
   if (loading) return <p className="adm-muted">Loading...</p>
-  const paras = f.body.split(/\n\s*\n/).map((s) => s.trim()).filter(Boolean)
   const err = (k) => errs[k] && <span className="adm-error">{errs[k]}</span>
 
   return (
@@ -110,8 +121,9 @@ export default function PostEditor() {
             </div>
             {tab === 'write'
               ? <textarea rows="16" aria-label="Body" value={f.body || ''} onChange={(e) => onBody(e.target.value)} />
-              : <div className="adm-preview">{paras.length ? paras.map((p, i) => <p key={i}>{p}</p>) : <p className="adm-muted">Nothing to preview.</p>}</div>}
-            <small className="adm-muted">Blank line = new paragraph</small>{err('body')}
+              : <div className="adm-preview md" dangerouslySetInnerHTML={{ __html: f.body.trim() ? marked.parse(f.body) : '<p>Nothing to preview.</p>' }} />}
+            <small className="adm-muted">Markdown supported. <button type="button" className="adm-link" onClick={() => mdRef.current.click()}>Upload .md file</button></small>
+            <input ref={mdRef} type="file" accept=".md,.markdown,.txt,text/markdown" hidden onChange={(ev) => { loadMd(ev.target.files[0]); ev.target.value = '' }} />{err('body')}
           </div>
         </div>
         <div className="adm-col">
