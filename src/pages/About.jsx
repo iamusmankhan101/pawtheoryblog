@@ -1,11 +1,12 @@
 import { useAuthors } from '../useContent.js'
+import { ABOUT_INTRO } from '../siteText.js'
 
 export default function About() {
   const { authors } = useAuthors()
   return (
     <div className="article">
       <h1>About PawTheory</h1>
-      <p className="body">PawTheory is a pets and animal care publication written by vets and trainers. We share practical, evidence-based advice for dogs, cats, small pets, birds, fish and reptiles.</p>
+      <p className="body">{ABOUT_INTRO}</p>
       <h2 className="section-title">Our experts</h2>
       <ul>{authors.map((a) => (
         <li key={a.name} className="body">
