@@ -25,12 +25,20 @@ ul { list-style: none; padding: 0; margin: 0; }
 .arrow { flex: none; }
 
 .section-title { font-size: 30px; margin: 64px 0 32px; }
-.grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 48px 32px; }
-.card img:first-child { width: 100%; aspect-ratio: 4/3; object-fit: cover; border-radius: 16px; background: #eaecf0; }
-.card h3 { font-size: 20px; margin: 20px 0 8px; }
+.grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; }
+.card { display: flex; flex-direction: column; background: #fff; border: 1px solid #eaecf0; border-radius: 20px; overflow: hidden; transition: box-shadow .2s, transform .2s; }
+.card:hover { box-shadow: 0 12px 32px rgba(16,24,40,.12); transform: translateY(-3px); }
+.card-img { position: relative; display: block; overflow: hidden; }
+.card-img img { width: 100%; aspect-ratio: 16/10; object-fit: cover; display: block; background: #eaecf0; transition: transform .4s; }
+.card:hover .card-img img { transform: scale(1.04); }
+.card-badge { position: absolute; top: 12px; left: 12px; background: rgba(255,255,255,.95); color: var(--navy); font-size: 13px; font-weight: 600; padding: 4px 12px; border-radius: 999px; }
+.card-body { display: flex; flex-direction: column; flex: 1; padding: 20px; }
+.card-meta { font-size: 13px; color: var(--gray); }
+.card h3 { font-size: 20px; line-height: 1.3; margin: 8px 0; }
 .excerpt { color: var(--gray); line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-.author { display: flex; align-items: center; gap: 12px; margin-top: 20px; font-size: 14px; color: var(--gray); }
-.author img { width: 40px; height: 40px; border-radius: 50%; }
+.author { display: flex; align-items: center; gap: 10px; margin-top: auto; padding-top: 16px; font-size: 14px; font-weight: 500; color: var(--navy); }
+.card .excerpt { margin-bottom: 16px; }
+.author img { width: 32px; height: 32px; flex: none; border-radius: 50%; object-fit: cover; }
 .more { text-align: center; margin: 48px 0; }
 
 footer.container { margin: 64px 0 24px; }
@@ -151,3 +159,8 @@ body { overflow-x: hidden; overflow-wrap: anywhere; }
   .body { font-size: 16.5px; }
   .article .cover, .cover { border-radius: 16px; }
 }
+
+/* tiles: must come after the base .tiles rule so breakpoints win */
+.tile { overflow-wrap: normal; word-break: normal; hyphens: none; }
+@media (max-width: 1024px) { .tiles { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 640px) { .tiles { grid-template-columns: repeat(2, 1fr); gap: 12px; } }
