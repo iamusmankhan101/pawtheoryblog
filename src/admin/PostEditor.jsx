@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { useCategories, useAuthors } from '../useContent.js'
-import { marked } from 'marked'
+import { renderMd } from '../markdown.js'
 import { supabase } from '../supabase.js'
 import { useToast } from './Toast.jsx'
 import '../admin.css'
@@ -29,6 +29,8 @@ export default function PostEditor() {
   const dirty = useRef(false)
   const fileRef = useRef()
   const mdRef = useRef()
+  const bodyRef = useRef()
+  const imgRef = useRef()
 
   useEffect(() => {
     if (!id) return
@@ -59,8 +61,7 @@ export default function PostEditor() {
     onBody(text.trim())
   }
 
-  const upload = async (file) => {
-    if (!file) return
+  const putImage = async (file) => {
     if (!file.type.startsWith('image/')) return toast('File must be an image', 'error')
     if (file.size > 5 * 1024 * 1024) return toast('Image must be under 5MB', 'error')
     setUploading(true)
@@ -68,7 +69,25 @@ export default function PostEditor() {
     const { error } = await supabase.storage.from('covers').upload(path, file)
     setUploading(false)
     if (error) return toast(`Upload failed: ${error.message}`, 'error')
-    set('cover_url', supabase.storage.from('covers').getPublicUrl(path).data.publicUrl)
+    return supabase.storage.from('covers').getPublicUrl(path).data.publicUrl
+  }
+  const upload = async (file) => {
+    const url = file && await putImage(file)
+    if (url) set('cover_url', url)
+  }
+
+  // Upload image(s) and insert ![alt](url) at the cursor in the body.
+  const insertImages = async (files) => {
+    for (const file of files) {
+      const url = await putImage(file)
+      if (!url) continue
+      const alt = file.name.replace(/\.[^.]+$/, '').replace(/[-_]+/g, ' ')
+      const ta = bodyRef.current, md = `![${alt}](${url})`
+      const at = ta ? ta.selectionStart : f.body.length
+      const body = f.body.slice(0, at) + (at && f.body[at - 1] !== '\n' ? '\n\n' : '') + md + '\n\n' + f.body.slice(at)
+      onBody(body)
+      f.body = body // so the next file in this batch inserts after it
+    }
   }
 
   const save = async (e) => {
@@ -120,9 +139,12 @@ export default function PostEditor() {
               <button type="button" className={tab === 'preview' ? 'active' : ''} onClick={() => setTab('preview')}>Preview</button>
             </div>
             {tab === 'write'
-              ? <textarea rows="16" aria-label="Body" value={f.body || ''} onChange={(e) => onBody(e.target.value)} />
-              : <div className="adm-preview md" dangerouslySetInnerHTML={{ __html: f.body.trim() ? marked.parse(f.body) : '<p>Nothing to preview.</p>' }} />}
-            <small className="adm-muted">Markdown supported. <button type="button" className="adm-link" onClick={() => mdRef.current.click()}>Upload .md file</button></small>
+              ? <textarea ref={bodyRef} rows="16" aria-label="Body" value={f.body || ''} onChange={(e) => onBody(e.target.value)}
+                onPaste={(e) => { const imgs = [...e.clipboardData.files].filter((x) => x.type.startsWith('image/')); if (imgs.length) { e.preventDefault(); insertImages(imgs) } }}
+                onDrop={(e) => { const imgs = [...e.dataTransfer.files].filter((x) => x.type.startsWith('image/')); if (imgs.length) { e.preventDefault(); insertImages(imgs) } }} />
+              : <div className="adm-preview md" dangerouslySetInnerHTML={{ __html: f.body.trim() ? renderMd(f.body) : '<p>Nothing to preview.</p>' }} />}
+            <small className="adm-muted">Markdown supported. <button type="button" className="adm-link" onClick={() => imgRef.current.click()}>{uploading ? 'Uploading...' : 'Insert image'}</button> (or paste / drop one) · <button type="button" className="adm-link" onClick={() => mdRef.current.click()}>Upload .md file</button></small>
+            <input ref={imgRef} type="file" accept="image/*" multiple hidden onChange={(ev) => { insertImages([...ev.target.files]); ev.target.value = '' }} />
             <input ref={mdRef} type="file" accept=".md,.markdown,.txt,text/markdown" hidden onChange={(ev) => { loadMd(ev.target.files[0]); ev.target.value = '' }} />{err('body')}
           </div>
         </div>

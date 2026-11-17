@@ -179,3 +179,9 @@ body { overflow-x: hidden; overflow-wrap: anywhere; }
 .md th, .md td { border: 1px solid #d1d5db; padding: 10px 12px; text-align: left; vertical-align: top; }
 .md thead tr { background: #f3f4f6; }
 .md tbody tr:nth-child(even) { background: #fafafa; }
+.md details.faq { border: 1px solid #d0d5dd; border-radius: 10px; margin: 0 0 10px; background: #fff; }
+.md details.faq summary { cursor: pointer; padding: 14px 18px; font-weight: 600; color: #101828; list-style: none; display: flex; justify-content: space-between; gap: 12px; }
+.md details.faq summary::-webkit-details-marker { display: none; }
+.md details.faq summary::after { content: '+'; font-size: 22px; line-height: 1; color: #667085; }
+.md details.faq[open] summary::after { content: '\2212'; }
+.md details.faq > div { padding: 0 18px 6px; }
