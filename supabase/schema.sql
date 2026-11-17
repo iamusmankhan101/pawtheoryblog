@@ -136,3 +136,17 @@ create policy "auth all" on page_seo for all to authenticated using (true) with 
 -- ============================================================
 -- END page_seo MIGRATION
 -- ============================================================
+
+-- ============================================================
+-- MIGRATION: posts.updated_at (shown as "Updated" date + dateModified). Safe to re-run.
+-- ============================================================
+alter table posts add column if not exists updated_at timestamptz;
+update posts set updated_at = created_at where updated_at is null;
+alter table posts alter column updated_at set default now();
+create or replace function set_updated_at() returns trigger language plpgsql as $$
+begin new.updated_at = now(); return new; end $$;
+drop trigger if exists posts_updated_at on posts;
+create trigger posts_updated_at before update on posts for each row execute function set_updated_at();
+-- ============================================================
+-- END updated_at MIGRATION
+-- ============================================================

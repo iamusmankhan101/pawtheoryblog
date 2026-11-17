@@ -189,3 +189,9 @@ body { overflow-x: hidden; overflow-wrap: anywhere; }
 .md h3, .md h4 { font-family: Inter, system-ui, sans-serif; font-size: 21px; font-weight: 600; letter-spacing: 0; margin: 28px 0 10px; }
 .md h4 { font-size: 18px; }
 @media (max-width: 720px) { .md h2 { font-size: 24px; } .md h3 { font-size: 19px; } }
+
+.crumbs { font-size: 14px; color: var(--gray); margin: 24px 0 0; }
+.crumbs a:hover { text-decoration: underline; }
+.updated { color: var(--gray); font-size: 14px; margin: -16px 0 24px; }
+.author-head { display: flex; gap: 20px; align-items: center; margin: 24px 0 32px; }
+.author-head img { width: 88px; height: 88px; border-radius: 50%; object-fit: cover; }

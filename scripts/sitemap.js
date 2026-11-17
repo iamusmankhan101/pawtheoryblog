@@ -1,17 +1,20 @@
 // Generates public/sitemap.xml at build time from published posts + categories.
 import { writeFileSync } from 'node:fs'
 import { SITE, get } from './lib.js'
+import { authorSlug } from '../src/siteText.js'
 const [posts, cats] = await Promise.all([
-  get('posts?select=slug,title,created_at&status=eq.published&order=created_at.desc'),
+  get('posts?select=*&status=eq.published&order=created_at.desc'),
   get('categories?select=slug'),
 ])
 
-const used = new Set((await get('posts?select=category&status=eq.published')).map((r) => r.category))
+const used = new Set(posts.map((r) => r.category))
+const authorsWithPosts = [...new Set(posts.map((p) => p.author).filter(Boolean))]
 const skip = new Set((await get('page_seo?select=path&noindex=eq.true')).map((r) => r.path)) // noindex pages stay out of the sitemap
 const urls = [
   ...['/', '/articles', '/about', '/contact', '/terms', '/privacy'].map((p) => [p]),
   ...cats.filter((c) => used.has(c.slug)).map((c) => [`/category/${c.slug}`]),
-  ...posts.map((p) => [`/article/${p.slug}`, p.created_at?.slice(0, 10)]),
+  ...authorsWithPosts.map((n) => [`/author/${authorSlug(n)}`]),
+  ...posts.map((p) => [`/article/${p.slug}`, (p.updated_at || p.created_at)?.slice(0, 10)]),
 ]
 const keep = urls.filter(([p]) => !skip.has(p))
 const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n` +

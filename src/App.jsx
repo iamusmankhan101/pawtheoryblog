@@ -19,6 +19,7 @@ import Authors from './admin/Authors.jsx'
 import Subscribers from './admin/Subscribers.jsx'
 import Messages from './admin/Messages.jsx'
 import NotFound from './pages/NotFound.jsx'
+import Author from './pages/Author.jsx'
 import SeoPages from './admin/SeoPages.jsx'
 import { SeoHead } from './seo.js'
 
@@ -65,6 +66,7 @@ export default function App() {
           <Route path="/articles" element={<Articles />} />
           <Route path="/category/:slug" element={<Category />} />
           <Route path="/article/:slug" element={<Article />} />
+          <Route path="/author/:slug" element={<Author />} />
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/terms" element={<Legal page="terms" />} />

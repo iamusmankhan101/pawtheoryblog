@@ -4,6 +4,8 @@ import { useCategories } from '../useContent.js'
 import { usePosts, usePost } from '../usePosts.js'
 import PostCard from '../components/PostCard.jsx'
 import NotFound from './NotFound.jsx'
+import Breadcrumbs from '../components/Breadcrumbs.jsx'
+import { authorSlug } from '../siteText.js'
 
 export default function Article() {
   const { slug } = useParams()
@@ -16,11 +18,13 @@ export default function Article() {
   const related = posts.filter((x) => x.category === p.category && x.slug !== p.slug).slice(0, 3)
   return (
     <>
+      <Breadcrumbs items={[['Home', '/'], [c.name, `/category/${c.slug}`], [p.title]]} />
       <article className="article">
         <img className="cover" src={p.image} alt={p.title} />
         <Link to={`/category/${c.slug}`} className="cat-badge">{c.name}</Link>
         <h1>{p.title}</h1>
-        <div className="author"><img src={p.avatar} alt="" /><span>{p.author} • {p.date} • {p.readTime}</span></div>
+        <div className="author"><img src={p.avatar} alt="" /><span>{p.author ? <Link to={`/author/${authorSlug(p.author)}`}>{p.author}</Link> : p.author} • {p.date} • {p.readTime}</span></div>
+        {p.updated && <p className="updated">Updated {p.updated}</p>}
         {p.md
           ? <div className="md" dangerouslySetInnerHTML={{ __html: renderMd(p.md) }} />
           : p.body.map((t, i) => <p key={i} className="body">{t}</p>)}

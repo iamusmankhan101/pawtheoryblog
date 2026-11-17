@@ -1,5 +1,6 @@
 import { useAuthors } from '../useContent.js'
-import { ABOUT_INTRO } from '../siteText.js'
+import { Link } from 'react-router-dom'
+import { ABOUT_INTRO, authorSlug } from '../siteText.js'
 
 export default function About() {
   const { authors } = useAuthors()
@@ -11,7 +12,7 @@ export default function About() {
       <ul>{authors.map((a) => (
         <li key={a.name} className="body">
           {a.avatar_url && <img src={a.avatar_url} alt="" width="40" height="40" style={{ borderRadius: '50%', objectFit: 'cover', verticalAlign: 'middle', marginRight: 8 }} />}
-          <strong>{a.name}</strong>, {a.role}. {a.bio}
+          <strong><Link to={`/author/${authorSlug(a.name)}`}>{a.name}</Link></strong>, {a.role}. {a.bio}
         </li>
       ))}</ul>
     </div>

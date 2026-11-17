@@ -16,6 +16,7 @@ export const mapRow = (r, authors = []) => ({
   image: r.cover_url || `https://picsum.photos/seed/${r.slug}/800/600`,
   body: (r.body || '').split(/\n\s*\n/).map((s) => s.trim()).filter(Boolean),
   md: r.body || '',
+  updated: r.updated_at && new Date(r.updated_at) - new Date(r.created_at) > 864e5 ? fmt(r.updated_at) : '',
   featured: !!r.featured,
   avatar: authors.find((a) => a.name === r.author)?.avatar_url || `https://i.pravatar.cc/40?u=${encodeURIComponent(r.author || '')}`,
 })

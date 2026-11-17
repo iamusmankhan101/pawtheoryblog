@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback } from 'react'
 import { supabase } from '../supabase.js'
-import { useCategories } from '../useContent.js'
+import { useCategories, useAuthors } from '../useContent.js'
+import { authorSlug } from '../siteText.js'
 import Modal from './Modal.jsx'
 import { useToast } from './Toast.jsx'
 import '../admin.css'
@@ -11,6 +12,7 @@ const blank = { title: '', description: '', canonical: '', og_image: '', noindex
 export default function SeoPages() {
   const toast = useToast()
   const { categories } = useCategories()
+  const { authors } = useAuthors()
   const [posts, setPosts] = useState([])
   const [seo, setSeo] = useState({})
   const [loading, setLoading] = useState(true)
@@ -33,6 +35,7 @@ export default function SeoPages() {
   const rows = [
     ...STATIC.map(([path, label]) => ({ path, label, kind: 'Page' })),
     ...categories.map((c) => ({ path: `/category/${c.slug}`, label: c.name, kind: 'Category' })),
+    ...authors.map((a) => ({ path: `/author/${authorSlug(a.name)}`, label: a.name, kind: 'Author' })),
     ...posts.map((p) => ({ path: `/article/${p.slug}`, label: p.title, kind: 'Article' })),
   ].filter((r) => !filter || (r.label + r.path).toLowerCase().includes(filter.toLowerCase()))
 
