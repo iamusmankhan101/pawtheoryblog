@@ -1,21 +1,6 @@
 // Generates public/sitemap.xml at build time from published posts + categories.
-import { readFileSync, writeFileSync, existsSync } from 'node:fs'
-
-const SITE = 'https://pawtheory.site'
-const env = { ...process.env }
-if (existsSync('.env'))
-  for (const l of readFileSync('.env', 'utf8').split('\n')) {
-    const m = l.match(/^(\w+)=(.*)$/)
-    if (m && !(m[1] in env)) env[m[1]] = m[2].trim()
-  }
-const url = env.VITE_SUPABASE_URL, key = env.VITE_SUPABASE_ANON_KEY
-
-const get = async (q) => {
-  if (!url || !key) return []
-  const r = await fetch(`${url}/rest/v1/${q}`, { headers: { apikey: key, Authorization: `Bearer ${key}` } })
-  return r.ok ? r.json() : []
-}
-
+import { writeFileSync } from 'node:fs'
+import { SITE, get } from './lib.js'
 const [posts, cats] = await Promise.all([
   get('posts?select=slug,title,created_at&status=eq.published&order=created_at.desc'),
   get('categories?select=slug'),
